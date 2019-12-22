@@ -7,7 +7,7 @@
 */
 
 // Template Interface
-interface LabelTemplate {
+interface Label {
 	// Add Single Label
 	function add($string, $row = 0, $col = 0);
 
@@ -20,7 +20,7 @@ class BadValueException extends Exception {}
 class InvalidStateException extends Exception {}
 
 // Avery 5160 Label Class
-class Avery_5160 extends FPDF implements LabelTemplate {
+class Avery_5160 extends FPDF implements Label {
 	// Class Variables
 	protected $open_state = 1;
 	protected $items = Array();
