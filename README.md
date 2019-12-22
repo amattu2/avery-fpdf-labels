@@ -12,13 +12,11 @@ Templates Included:
 - (Integer, 0-9) Custom Row Position [Optional] [No overwrite validation]
 - (Integer, 0-2) Custom Column Position [Optional] [No overwrite validation]
 
-Throws:
-- BadValueException
+Throws: BadValueException
 
 >Class->**build**()
 
-Throws:
-- InvalidStateException
+Throws: InvalidStateException
 
 # Demo
 Include both **fpdf.php** and **labels.class.php**
