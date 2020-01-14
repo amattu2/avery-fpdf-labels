@@ -1,7 +1,7 @@
 <?php
 /*
-	Produced 2019
-	By https://github.com/amattu2
+	Produced 2019-2020
+	By https://amattu.com/github
 	Copy Alec M.
 	License GNU Affero General Public License v3.0
 */
@@ -9,10 +9,10 @@
 // Template Interface
 interface Label {
 	// Add Single Label
-	function add($string, $row = 0, $col = 0);
+	public function add($string, $row = 0, $col = 0);
 
 	// Build Template
-	function build();
+	public function build();
 }
 
 // Exception Classes
@@ -32,11 +32,17 @@ class Avery_5160 extends FPDF implements Label {
 	protected $config_row_count = 10;
 	protected $config_col_count = 3;
 
-	// Add Label
-	// $string => Multiple line address string
-	// $row => Zero-indexed row number
-	// $col => Zero-indexed column number
-	function add($string, $row = -1, $col = -1) {
+	/**
+	 * Add single label item
+	 *
+	 * @param string label lines
+	 * @param integer $row Zero indexed row number
+	 * @param integer $col Zero indexed column number
+	 * @throws BadValueException
+	 * @author Alec M. <https://amattu.com>
+	 * @date 2020-01-14T09:46:01-050
+	 */
+	public function add($string, $row = -1, $col = -1) {
 		// Checks
 		if (empty($string) || substr_count($string, "\n") > $this->config_max_linebreak) {
 			throw new BadValueException("Label string provided is empty or contains too many lines");
@@ -53,8 +59,15 @@ class Avery_5160 extends FPDF implements Label {
 		);
 	}
 
-	// Build PDF
-	function build() {
+	/**
+	 * Build label PDF
+	 *
+	 * @return None
+	 * @throws InvalidStateException
+	 * @author Alec M. <https://amattu.com>
+	 * @date 2020-01-14T09:47:48-050
+	 */
+	public function build() {
 		// Checks
 		if ($this->open_state != 1) {
 			throw new InvalidStateException("Attempt to build onto an existing PDF");
@@ -65,7 +78,6 @@ class Avery_5160 extends FPDF implements Label {
 		$right = $this->GetPageWidth() - $this->left;
 		$config_row_height = (($bottom - $this->top) / $this->config_row_count);
 		$config_items_per_page = $this->config_row_count * $this->config_col_count;
-		//$limit = ceil(count($this->items) / $config_items_per_page);
 		$current_row = 0;
 		$current_col = 0;
 		$current_page = 0;
@@ -99,11 +111,9 @@ class Avery_5160 extends FPDF implements Label {
 				$item["C"] = $current_col;
 			}
 
-			// Move Position
+			// Build Item
 			$this->setY(($item["R"] > 0 ? $this->top + ($config_row_height * $item["R"]) + 2 : $this->top + 2));
 			$this->setX(($item["C"] > 0 ? $this->left + ($this->config_col_width * $item["C"]) + ($this->config_col_sep_width * $item["C"]) : $this->left));
-
-			// Output
 			$this->MultiCell($this->config_col_width, ($config_row_height / 3.5), $item["S"], false, "C");
 		}
 
