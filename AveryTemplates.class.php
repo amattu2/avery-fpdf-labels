@@ -139,7 +139,7 @@ class Avery_5160 extends FPDF implements LabelInterface {
   public function build()
   {
     // Checks
-    if ($this->open_state != 1) {
+    if ($this->open_state !== 1) {
       throw new InvalidStateException("Attempt to build onto an existing PDF");
     }
 
