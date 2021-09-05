@@ -1,60 +1,25 @@
 # Introduction
-This is a simple PHP Avery label template implementation and extension to the FPDF library. 
+This is a simple [FPDF](www.fpdf.org) and [Avery](www.avery.com/templates) template class. It provides easy implementation of Avery shipping label templates.
 
-Templates Included:
+## Supported Templates
 - Avery 5160
 
+## To-Do Templates
+- Avery 5162
+- Avery 5163
+- Avery 5195
+- Avery 5816
+- Avery 5817
+- Avery 8160
+
+## To-Do Code
+- Fix label centering (Avery 5162)
+- Match label sizing (Avery 5162)
+
 # Usage
+See the documentation below or `index.php` or actual implementations.
 
->Class->**add**(*(string)* String, *(int)* Row, *(int)* Column)
-
-- (String) Multiple line string (Capped at 4 line breaks)
-- (Integer, 0-9) Custom Row Position [Optional] [No overwrite validation]
-- (Integer, 0-2) Custom Column Position [Optional] [No overwrite validation]
-
-Throws: BadValueException
-
->Class->**build**()
-
-Throws: InvalidStateException
-
-# Demo
-Include both **fpdf.php** and **labels.class.php**
-```
-require("fpdf.php");
-require("labels.class.php");
-```
-
-Create a new template (Eg. Avery_5160)
-```
-$pdf = new Avery_5160();
-```
-
-Configure the PDF (See Below)
-```
-$pdf->SetAutoPageBreak(false);
-$pdf->AliasNbPages();
-$pdf->SetTopMargin(13);
-$pdf->AddPage("P", "Letter");
-$pdf->SetFont('Helvetica', '', 11);
-$pdf->SetLineWidth(0.1);
-```
-
-Add a label
-```
-$pdf->add("Mr. & Mrs. GitHub\nLine 2\nLine 3");
-```
-
-Build PDF
-```
-$pdf->build();
-```
-
-Export
-```
-$pdf->Output("I", "export.pdf");
-````
-
+TBD
 # Notes
 N/A
 
