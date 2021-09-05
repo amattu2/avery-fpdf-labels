@@ -9,13 +9,36 @@
 // Class namespace
 namespace amattu;
 
-// Template Interface
+/*
+  Avery label interface
+ */
 interface LabelInterface {
-  // Add Single Label
-  public function add($string, $row = 0, $col = 0);
+  /**
+   * Add a single label to the PDF
+   *
+   * @param string $label a complete label with lines donoted by \n
+   * @param integer $row optional desired insert row
+   * @param integer $col optional diesired intert column
+   * @throws TypeError
+   * @throws BadValueException
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-09-05T13:49:28-040
+   */
+  public function add(string $label, int $row = 0, int $col = 0) : bool;
 
-  // Build Template
-  public function build();
+  /**
+   * Build the completed PDF with labels
+   *
+   * NOTE:
+   *   (1) To save resources, no PDF is built until
+   *   this function is called.
+   *
+   * @return void
+   * @throws InvalidStateException
+   * @author Alec M. <https://amattu.com>
+   * @date 2021-09-05T13:50:58-040
+   */
+  public function build() : void;
 }
 
 // Exception Classes
