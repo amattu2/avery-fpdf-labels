@@ -9,6 +9,10 @@
 // Class namespace
 namespace amattu;
 
+// Exception Classes
+class BadValueException extends Exception {}
+class InvalidStateException extends Exception {}
+
 /*
   Avery label interface
  */
@@ -19,6 +23,7 @@ interface LabelInterface {
    * @param string $label a complete label with lines donoted by \n
    * @param integer $row optional desired insert row
    * @param integer $col optional diesired intert column
+   * @return bool success
    * @throws TypeError
    * @throws BadValueException
    * @author Alec M. <https://amattu.com>
@@ -41,34 +46,71 @@ interface LabelInterface {
   public function build() : void;
 }
 
-// Exception Classes
-class BadValueException extends Exception {}
-class InvalidStateException extends Exception {}
-
-// Avery 5160 Label Class
+/*
+ A Avery 5160 label PDF
+ */
 class Avery_5160 extends FPDF implements LabelInterface {
-  // Class Variables
+  /**
+   * Represents current PDF state
+   *
+   * @var int
+   */
   protected $open_state = 1;
-  protected $items = Array();
-  protected $top = 13;
-  protected $left = 5;
-  protected $config_col_width = 67;
-  protected $config_col_sep_width = 3;
-  protected $config_max_linebreak = 4;
-  protected $config_row_count = 10;
-  protected $config_col_count = 3;
 
   /**
-   * Add single label item
+   * Holds the labels
    *
-   * @param string label lines
-   * @param integer $row Zero indexed row number
-   * @param integer $col Zero indexed column number
-   * @throws BadValueException
-   * @author Alec M. <https://amattu.com>
-   * @date 2020-01-14T09:46:01-050
+   * @var array
    */
-  public function add($string, $row = -1, $col = -1) {
+  protected $labels = Array();
+
+  /**
+   * PDF top margin
+   *
+   * @var int
+   */
+  protected $top = 13;
+
+  /**
+   * PDF left margin
+   *
+   * @var int
+   */
+  protected $left = 5;
+
+  /**
+   * Represents the PDF column width
+   *
+   * @var int
+   */
+  public const COLUMN_WIDTH = 67;
+
+  /**
+   * Represents the PDF maximum number of labels
+   *
+   * @var int
+   */
+  public const MAX_LABEL_LINES = 4;
+
+  /**
+   * PDF maximum number of columns
+   *
+   * @var int
+   */
+  public const COLUMNS = 3;
+
+  /**
+   * PDF maximum number of rows
+   *
+   * @var int
+   */
+  public const ROWS = 10;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function add(string $string, int $row = -1, int $col = -1) : bool
+  {
     // Checks
     if (empty($string) || substr_count($string, "\n") > $this->config_max_linebreak) {
       throw new BadValueException("Label string provided is empty or contains too many lines");
@@ -78,7 +120,7 @@ class Avery_5160 extends FPDF implements LabelInterface {
     }
 
     // Append
-    $this->items[] = Array(
+    $this->labels[] = Array(
       "S" => trim($string),
       "R" => $row,
       "C" => $col
@@ -86,14 +128,10 @@ class Avery_5160 extends FPDF implements LabelInterface {
   }
 
   /**
-   * Build label PDF
-   *
-   * @return None
-   * @throws InvalidStateException
-   * @author Alec M. <https://amattu.com>
-   * @date 2020-01-14T09:47:48-050
+   * {@inheritdoc}
    */
-  public function build() {
+  public function build()
+  {
     // Checks
     if ($this->open_state != 1) {
       throw new InvalidStateException("Attempt to build onto an existing PDF");
@@ -110,7 +148,7 @@ class Avery_5160 extends FPDF implements LabelInterface {
     $current_item_count = 0;
 
     // Loop
-    foreach ($this->items as $item) {
+    foreach ($this->labels as $item) {
       // Checks
       if ($current_item_count++ > $config_items_per_page) {
         $this->AddPage("P", "Letter");
@@ -139,7 +177,7 @@ class Avery_5160 extends FPDF implements LabelInterface {
 
       // Build Item
       $this->setY(($item["R"] > 0 ? $this->top + ($config_row_height * $item["R"]) + 2 : $this->top + 2));
-      $this->setX(($item["C"] > 0 ? $this->left + ($this->config_col_width * $item["C"]) + ($this->config_col_sep_width * $item["C"]) : $this->left));
+      $this->setX(($item["C"] > 0 ? $this->left + ($this->config_col_width * $item["C"]) + (3 * $item["C"]) : $this->left));
       $this->MultiCell($this->config_col_width, ($config_row_height / 3.5), $item["S"], false, "C");
     }
 
@@ -147,4 +185,3 @@ class Avery_5160 extends FPDF implements LabelInterface {
     $this->open_state = 0;
   }
 }
-?>
