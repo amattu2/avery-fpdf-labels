@@ -10,8 +10,8 @@
 namespace amattu;
 
 // Exception Classes
-class BadValueException extends Exception {}
-class InvalidStateException extends Exception {}
+class BadValueException extends \Exception {}
+class InvalidStateException extends \Exception {}
 
 /*
   Avery label interface
@@ -23,13 +23,12 @@ interface LabelInterface {
    * @param string $label a complete label with lines donoted by \n
    * @param integer $row optional desired insert row
    * @param integer $col optional diesired intert column
-   * @return bool success
    * @throws TypeError
    * @throws BadValueException
    * @author Alec M. <https://amattu.com>
    * @date 2021-09-05T13:49:28-040
    */
-  public function add(string $label, int $row = 0, int $col = 0) : bool;
+  public function add(string $label, int $row = 0, int $col = 0) : void;
 
   /**
    * Build the completed PDF with labels
@@ -49,7 +48,7 @@ interface LabelInterface {
 /*
  A Avery 5160 label PDF
  */
-class Avery_5160 extends FPDF implements LabelInterface {
+class Avery_5160 extends \FPDF implements LabelInterface {
   /**
    * Represents current PDF state
    *
@@ -109,7 +108,7 @@ class Avery_5160 extends FPDF implements LabelInterface {
   /**
    * {@inheritdoc}
    */
-  public function add(string $string, int $row = -1, int $col = -1) : bool
+  public function add(string $string, int $row = -1, int $col = -1) : void
   {
     // Checks
     if (empty($string)) {
@@ -155,7 +154,7 @@ class Avery_5160 extends FPDF implements LabelInterface {
 
     // Loop
     foreach ($this->labels as $item) {
-      // Checks
+      // Check page overflow
       if ($current_item_count++ > $config_items_per_page) {
         $this->AddPage("P", "Letter");
         $current_item_count = 1;
@@ -163,10 +162,14 @@ class Avery_5160 extends FPDF implements LabelInterface {
         $current_col = 0;
         $current_row = 0;
       }
+
+      // Check row overflow
       if ($current_row >= Avery_5160::ROWS) {
         $current_col++;
         $current_row = 0;
       }
+
+      // Check column overflow
       if ($current_col >= Avery_5160::COLUMNS) {
         $this->AddPage("P", "Letter");
         $current_item_count = 1;
@@ -174,6 +177,8 @@ class Avery_5160 extends FPDF implements LabelInterface {
         $current_col = 0;
         $current_row = 0;
       }
+
+      // Check label position request
       if ($item[1] > Avery_5160::ROWS || $item[1] < 0) {
         $item[1] = $current_row++;
       }
@@ -183,8 +188,8 @@ class Avery_5160 extends FPDF implements LabelInterface {
 
       // Build Item
       $this->setY(($item[1] > 0 ? $this->top + ($config_row_height * $item[1]) + 2 : $this->top + 2));
-      $this->setX(($item[2] > 0 ? $this->left + ($this->config_col_width * $item[2]) + (3 * $item[2]) : $this->left));
-      $this->MultiCell($this->config_col_width, ($config_row_height / 3.5), $item[0], false, 2);
+      $this->setX(($item[2] > 0 ? $this->left + (Avery_5160::COLUMN_WIDTH * $item[2]) + (3 * $item[2]) : $this->left));
+      $this->MultiCell(Avery_5160::COLUMN_WIDTH, ($config_row_height / 3.5), $item[0], 1, 2);
     }
 
     // Close PDF
