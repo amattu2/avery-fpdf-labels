@@ -20,7 +20,7 @@ interface LabelInterface {
   /**
    * Add a single label to the PDF
    *
-   * @param string $label a complete label with lines donoted by \n
+   * @param array $lines an array of label liens
    * @param integer $row optional desired insert row
    * @param integer $col optional diesired intert column
    * @throws TypeError
@@ -28,7 +28,7 @@ interface LabelInterface {
    * @author Alec M. <https://amattu.com>
    * @date 2021-09-05T13:49:28-040
    */
-  public function add(string $label, int $row = 0, int $col = 0) : void;
+  public function add(array $lines, int $row = 0, int $col = 0) : void;
 
   /**
    * Build the completed PDF with labels
@@ -108,14 +108,14 @@ class Avery_5160 extends \FPDF implements LabelInterface {
   /**
    * {@inheritdoc}
    */
-  public function add(string $string, int $row = -1, int $col = -1) : void
+  public function add(array $lines, int $row = -1, int $col = -1) : void
   {
     // Checks
-    if (empty($string)) {
+    if (empty($lines)) {
       throw new BadValueException("Cannot add a empty label to PDF");
     }
-    if (substr_count($string, "\n") > Avery_5160::MAX_LABEL_LINES) {
-      throw new BadValueException("Cannot add a label with more than 4 lines to PDF");
+    if (count($lines) > Avery_5160::MAX_LABEL_LINES) {
+      throw new BadValueException("Cannot add a label with more than {Avery_5160::MAX_LABEL_LINES} lines to PDF");
     }
     if ($row < -1 || ($row + 1) > Avery_5160::ROWS) {
       throw new BadValueException("Cannot add a label to that row");
@@ -126,7 +126,7 @@ class Avery_5160 extends \FPDF implements LabelInterface {
 
     // Append
     $this->labels[] = Array(
-      trim($string),
+      array_pad($lines, 4, " "),
       $row,
       $col
     );
@@ -189,7 +189,7 @@ class Avery_5160 extends \FPDF implements LabelInterface {
       // Build Item
       $this->setY(($item[1] > 0 ? $this->top + ($config_row_height * $item[1]) + 2 : $this->top + 2));
       $this->setX(($item[2] > 0 ? $this->left + (Avery_5160::COLUMN_WIDTH * $item[2]) + (3 * $item[2]) : $this->left));
-      $this->MultiCell(Avery_5160::COLUMN_WIDTH, ($config_row_height / 3.5), $item[0], 1, 2);
+      $this->MultiCell(Avery_5160::COLUMN_WIDTH, ($config_row_height / 4.5), implode($item[0], "\n"), 1, "c");
     }
 
     // Close PDF
