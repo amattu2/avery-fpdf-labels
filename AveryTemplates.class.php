@@ -136,7 +136,7 @@ class Avery_5160 extends FPDF implements LabelInterface {
   /**
    * {@inheritdoc}
    */
-  public function build()
+  public function build() : void
   {
     // Checks
     if ($this->open_state !== 1) {
