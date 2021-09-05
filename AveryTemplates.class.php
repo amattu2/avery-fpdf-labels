@@ -112,16 +112,22 @@ class Avery_5160 extends FPDF implements LabelInterface {
   public function add(string $string, int $row = -1, int $col = -1) : bool
   {
     // Checks
-    if (empty($string) || substr_count($string, "\n") > $this->config_max_linebreak) {
-      throw new BadValueException("Label string provided is empty or contains too many lines");
+    if (empty($string)) {
+      throw new BadValueException("Cannot add a empty label to PDF");
     }
-    if ($row < -1 || $col < -1 || ($row + 1) > $this->config_row_count || ($col + 1) > $this->config_col_count) {
-      throw new BadValueException("Row or column value specified is invalid");
+    if (substr_count($string, "\n") > Avery_5160::MAX_LABEL_LINES) {
+      throw new BadValueException("Cannot add a label with more than 4 lines to PDF");
+    }
+    if ($row < -1 || ($row + 1) > Avery_5160::ROWS) {
+      throw new BadValueException("Cannot add a label to that row");
+    }
+    if ($col < -1 || ($col + 1) > Avery_5160::COLUMNS) {
+      throw new BadValueException("Cannot add a label to that column");
     }
 
     // Append
     $this->labels[] = Array(
-      "S" => trim($string),
+      "L" => trim($string),
       "R" => $row,
       "C" => $col
     );
@@ -140,8 +146,8 @@ class Avery_5160 extends FPDF implements LabelInterface {
     // Variables
     $bottom = $this->GetPageHeight() - $this->top;
     $right = $this->GetPageWidth() - $this->left;
-    $config_row_height = (($bottom - $this->top) / $this->config_row_count);
-    $config_items_per_page = $this->config_row_count * $this->config_col_count;
+    $config_row_height = (($bottom - $this->top) / Avery_5160::ROWS);
+    $config_items_per_page = Avery_5160::ROWS * Avery_5160::COLUMNS;
     $current_row = 0;
     $current_col = 0;
     $current_page = 0;
@@ -157,21 +163,21 @@ class Avery_5160 extends FPDF implements LabelInterface {
         $current_col = 0;
         $current_row = 0;
       }
-      if ($current_row >= $this->config_row_count) {
+      if ($current_row >= Avery_5160::ROWS) {
         $current_col++;
         $current_row = 0;
       }
-      if ($current_col >= $this->config_col_count) {
+      if ($current_col >= Avery_5160::COLUMNS) {
         $this->AddPage("P", "Letter");
         $current_item_count = 1;
         $current_page++;
         $current_col = 0;
         $current_row = 0;
       }
-      if ($item["R"] > $this->config_row_count || $item["R"] < 0) {
+      if ($item["R"] > Avery_5160::ROWS || $item["R"] < 0) {
         $item["R"] = $current_row++;
       }
-      if ($item["C"] > $this->config_col_count || $item["C"] < 0) {
+      if ($item["C"] > Avery_5160::COLUMNS || $item["C"] < 0) {
         $item["C"] = $current_col;
       }
 
