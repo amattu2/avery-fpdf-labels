@@ -8,7 +8,7 @@
 
 // Files
 require(dirname(__FILE__) . "/classes/fpdf.class.php");
-require(dirname(__FILE__) . "/classes/labels.class.php");
+require("labels.class.php");
 
 // Variables
 $pdf = new Avery_5160();
@@ -38,7 +38,7 @@ $pdf->Output("I", "export.pdf");
 function addTestUsers($template, $amount = 5) {
 	for ($i = 0; $i < $amount; $i++) {
 		$index = $i + 1;
-		$template->add("Test User {$index}\n9094 Red Way Drive\nRockwell, IN 20580");
+		$template->add("Test User {$index}\n9094 Red Way Drive\nAPT 494\nRockwell, IN 20580");
 	}
 }
 ?>
