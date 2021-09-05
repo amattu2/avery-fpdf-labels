@@ -1,13 +1,13 @@
 <?php
 /*
-	Produced 2019-2020
+	Produced 2019-2021
 	By https://amattu.com/github
 	Copy Alec M.
 	License GNU Affero General Public License v3.0
 */
 
 // Template Interface
-interface Label {
+interface LabelInterface {
 	// Add Single Label
 	public function add($string, $row = 0, $col = 0);
 
@@ -20,7 +20,7 @@ class BadValueException extends Exception {}
 class InvalidStateException extends Exception {}
 
 // Avery 5160 Label Class
-class Avery_5160 extends FPDF implements Label {
+class Avery_5160 extends FPDF implements LabelInterface {
 	// Class Variables
 	protected $open_state = 1;
 	protected $items = Array();
