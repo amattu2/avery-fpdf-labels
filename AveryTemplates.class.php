@@ -127,9 +127,9 @@ class Avery_5160 extends FPDF implements LabelInterface {
 
     // Append
     $this->labels[] = Array(
-      "L" => trim($string),
-      "R" => $row,
-      "C" => $col
+      trim($string),
+      $row,
+      $col
     );
   }
 
@@ -174,17 +174,17 @@ class Avery_5160 extends FPDF implements LabelInterface {
         $current_col = 0;
         $current_row = 0;
       }
-      if ($item["R"] > Avery_5160::ROWS || $item["R"] < 0) {
-        $item["R"] = $current_row++;
+      if ($item[1] > Avery_5160::ROWS || $item[1] < 0) {
+        $item[1] = $current_row++;
       }
-      if ($item["C"] > Avery_5160::COLUMNS || $item["C"] < 0) {
-        $item["C"] = $current_col;
+      if ($item[2] > Avery_5160::COLUMNS || $item[2] < 0) {
+        $item[2] = $current_col;
       }
 
       // Build Item
-      $this->setY(($item["R"] > 0 ? $this->top + ($config_row_height * $item["R"]) + 2 : $this->top + 2));
-      $this->setX(($item["C"] > 0 ? $this->left + ($this->config_col_width * $item["C"]) + (3 * $item["C"]) : $this->left));
-      $this->MultiCell($this->config_col_width, ($config_row_height / 3.5), $item["S"], false, "C");
+      $this->setY(($item[1] > 0 ? $this->top + ($config_row_height * $item[1]) + 2 : $this->top + 2));
+      $this->setX(($item[2] > 0 ? $this->left + ($this->config_col_width * $item[2]) + (3 * $item[2]) : $this->left));
+      $this->MultiCell($this->config_col_width, ($config_row_height / 3.5), $item[0], false, 2);
     }
 
     // Close PDF
