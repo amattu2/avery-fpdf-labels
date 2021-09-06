@@ -7,21 +7,17 @@
 */
 
 // Files
-require(dirname(__FILE__) . "/classes/fpdf.class.php");
+require("FPDF.class.php");
 require("AveryTemplates.class.php");
 
 // Variables
 $pdf = new amattu\Avery_5160();
 
 // PDF Properties
-$pdf->SetAutoPageBreak(false);
-$pdf->AliasNbPages();
-$pdf->SetTopMargin(13);
-$pdf->SetTitle("FPDF Avery Templates");
+$pdf->SetTitle("FPDF Template Example");
 $pdf->AddPage("P", "Letter");
 $pdf->SetFont('Helvetica', '', 11);
 $pdf->SetTextColor(25, 25, 25);
-$pdf->SetLineWidth(0.1);
 
 // Build
 addTestUsers($pdf, ($_GET && isset($_GET['count']) && is_numeric($_GET['count']) && $_GET['count'] < 1001 ? $_GET['count'] : 35));
