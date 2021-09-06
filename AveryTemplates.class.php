@@ -149,6 +149,10 @@ class Avery_5160 extends \FPDF implements LabelInterface {
       throw new InvalidStateException("Attempt to build onto an existing PDF");
     }
 
+    // FPDF Configuration
+    $this->SetTopMargin($this->top);
+    $this->SetAutoPageBreak(false);
+
     // Variables
     $bottom = $this->GetPageHeight() - $this->top;
     $right = $this->GetPageWidth() - $this->left;
