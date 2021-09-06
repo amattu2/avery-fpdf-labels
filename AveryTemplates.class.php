@@ -54,7 +54,7 @@ class Avery_5160 extends \FPDF implements LabelInterface {
    *
    * @var int|bool
    */
-  protected const DEBUG = 1;
+  protected const DEBUG = 0;
 
   /**
    * Represents current PDF state
