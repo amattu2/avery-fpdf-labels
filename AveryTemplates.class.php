@@ -50,6 +50,13 @@ interface LabelInterface {
  */
 class Avery_5160 extends \FPDF implements LabelInterface {
   /**
+   * A private flag for toggling debug options
+   *
+   * @var int|bool
+   */
+  protected const DEBUG = 1;
+
+  /**
    * Represents current PDF state
    *
    * @var int
@@ -82,7 +89,7 @@ class Avery_5160 extends \FPDF implements LabelInterface {
    *
    * @var int
    */
-  public const COLUMN_WIDTH = 67;
+  public const COLUMN_WIDTH = 66.5;
 
   /**
    * Represents the PDF maximum number of labels
@@ -189,7 +196,7 @@ class Avery_5160 extends \FPDF implements LabelInterface {
       // Build Item
       $this->setY(($item[1] > 0 ? $this->top + ($config_row_height * $item[1]) + 2 : $this->top + 2));
       $this->setX(($item[2] > 0 ? $this->left + (Avery_5160::COLUMN_WIDTH * $item[2]) + (3 * $item[2]) : $this->left));
-      $this->MultiCell(Avery_5160::COLUMN_WIDTH, ($config_row_height / 4.5), implode($item[0], "\n"), 1, "c");
+      $this->MultiCell(Avery_5160::COLUMN_WIDTH, ($config_row_height / 4.5), implode($item[0], "\n"), Avery_5160::DEBUG, "C");
     }
 
     // Close PDF
