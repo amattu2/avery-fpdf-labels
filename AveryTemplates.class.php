@@ -200,7 +200,7 @@ class Avery_5160 extends \FPDF implements LabelInterface {
       // Build Item
       $this->setY(($item[1] > 0 ? $this->top + ($config_row_height * $item[1]) + 2 : $this->top + 2));
       $this->setX(($item[2] > 0 ? $this->left + (Avery_5160::COLUMN_WIDTH * $item[2]) + (3 * $item[2]) : $this->left));
-      $this->MultiCell(Avery_5160::COLUMN_WIDTH, ($config_row_height / 4.5), implode($item[0], "\n"), Avery_5160::DEBUG, "C");
+      $this->MultiCell(Avery_5160::COLUMN_WIDTH, ($config_row_height / 4.5), implode("\n", $item[0]), Avery_5160::DEBUG, "C");
     }
 
     // Close PDF
