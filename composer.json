@@ -1,0 +1,17 @@
+{
+    "name": "amattu2/avery-fpdf-labels",
+    "description": "A PHP library designed to assist in building Avery Label sheets with FPDF",
+    "type": "library",
+    "license": "AGPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "amattu2\\Avery\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alec M.",
+            "email": "alecmattu1234@gmail.com"
+        }
+    ]
+}
