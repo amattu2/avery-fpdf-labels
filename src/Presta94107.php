@@ -136,7 +136,7 @@ class Presta94107 implements LabelInterface
 
     // Append
     $this->labels[] = [
-      array_pad($lines, 4, " "),
+      array_pad($lines, self::MAX_LABEL_LINES, " "),
       $row,
       $col,
     ];
