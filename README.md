@@ -9,6 +9,7 @@ This is a basic PHP project to implement support for generating [Avery.com](http
 The currently implemented templates are listed below.
 
 - Avery 5160
+- Avery Presta 94107
 
 ## Plans to Support
 
