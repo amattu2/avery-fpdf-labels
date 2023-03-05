@@ -29,11 +29,11 @@ class BadValueException extends \Exception {}
 class InvalidStateException extends \Exception {}
 
 /**
- * Avery 5160 Label PDF Generator
+ * Avery Presta 94107 Label PDF Generator
  *
  * @author Alec M.
  */
-class Avery5160 implements LabelInterface
+class Presta94107 implements LabelInterface
 {
   /**
    * FPDF instance
@@ -59,30 +59,37 @@ class Avery5160 implements LabelInterface
   /**
    * PDF top margin
    *
-   * @var int
+   * @var float
    */
-  protected $top = 13;
+  protected $top = 16;
 
   /**
    * PDF left margin
    *
-   * @var int
+   * @var float
    */
-  protected $left = 5;
+  protected $left = 16;
 
   /**
    * Represents the PDF column width
    *
-   * @var int
+   * @var float
    */
-  public const COLUMN_WIDTH = 66.5;
+  public const COLUMN_WIDTH = 50.8;
+
+  /**
+   * Represents the PDF row height
+   *
+   * @var float
+   */
+  public const ROW_HEIGHT = 50.8;
 
   /**
    * Represents the PDF maximum number of labels
    *
    * @var int
    */
-  public const MAX_LABEL_LINES = 4;
+  public const MAX_LABEL_LINES = 6;
 
   /**
    * PDF maximum number of columns
@@ -96,7 +103,7 @@ class Avery5160 implements LabelInterface
    *
    * @var int
    */
-  public const ROWS = 10;
+  public const ROWS = 4;
 
   /**
    * Contructor
@@ -138,7 +145,7 @@ class Avery5160 implements LabelInterface
   /**
    * {@inheritdoc}
    */
-  public function writeLabels(): void
+  public function writeLabels(bool $borders = false): void
   {
     // Checks
     if ($this->open_state !== 1) {
@@ -150,9 +157,9 @@ class Avery5160 implements LabelInterface
     $this->pdf->SetAutoPageBreak(false);
 
     // Variables
-    $bottom = $this->pdf->GetPageHeight() - $this->top;
-    $config_row_height = (($bottom - $this->top) / self::ROWS);
     $config_items_per_page = self::ROWS * self::COLUMNS;
+    $column_gap = ($this->pdf->GetPageWidth() - ($this->left + (self::COLUMN_WIDTH * self::COLUMNS))) / self::COLUMNS;
+    $row_gap = ($this->pdf->GetPageHeight() - ($this->top + (self::ROW_HEIGHT * self::ROWS))) / self::ROWS;
     $current_row = 0;
     $current_col = 0;
     $current_page = 0;
@@ -184,7 +191,7 @@ class Avery5160 implements LabelInterface
         $current_row = 0;
       }
 
-      // Check label position request
+      // Enforce item position
       if ($item[1] > self::ROWS || $item[1] < 0) {
         $item[1] = $current_row++;
       }
@@ -193,9 +200,13 @@ class Avery5160 implements LabelInterface
       }
 
       // Build Item
-      $this->pdf->SetY(($item[1] > 0 ? $this->top + ($config_row_height * $item[1]) + 2 : $this->top + 2));
-      $this->pdf->SetX(($item[2] > 0 ? $this->left + (self::COLUMN_WIDTH * $item[2]) + (3 * $item[2]) : $this->left));
-      $this->pdf->MultiCell(self::COLUMN_WIDTH, ($config_row_height / 4.5), implode("\n", $item[0]), 0, "C");
+      $this->pdf->SetY($this->top + ((self::ROW_HEIGHT + $row_gap) * $item[1]));
+      $this->pdf->SetX($this->left + ((self::COLUMN_WIDTH + $column_gap) * $item[2]));
+      if ($borders) {
+        $this->pdf->SetLineWidth(0.4);
+        $this->pdf->Rect($this->pdf->GetX(), $this->pdf->GetY(), self::COLUMN_WIDTH, self::ROW_HEIGHT);
+      }
+      $this->pdf->MultiCell(self::COLUMN_WIDTH, self::ROW_HEIGHT / self::MAX_LABEL_LINES, implode("\n", $item[0]), 0, "C");
     }
 
     $this->open_state = 0;
