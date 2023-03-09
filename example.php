@@ -24,7 +24,7 @@
 require 'vendor/autoload.php';
 require 'src/Avery5160.php';
 
-$template = new Avery\Avery5160(Fpdf\Fpdf::class);
+$template = new amattu2\Avery5160(Fpdf\Fpdf::class);
 
 // PDF Properties
 $template->pdf->SetTitle("FPDF Template Example");
