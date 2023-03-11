@@ -1,6 +1,6 @@
 # Introduction
 
-This is a basic PHP project to implement support for generating [Avery.com](https://www.avery.com/templates) label templates using [FPDF](https://fpdf.org).
+This is a PHP project to implement support for generating [Avery.com](https://www.avery.com/templates) label templates using [FPDF](https://fpdf.org).
 
 # Templates
 
@@ -35,12 +35,15 @@ composer install amattu2/avery-fpdf-labels
 composer install fpdf/fpdf
 ```
 
+**NOTE:** You can use any fork of FPDF you want as long as it implements the same methods as FPDF.
+
 Then
 
 ```php
 require 'vendor/autoload.php';
 
-$template = new Avery\Avery5160(Fpdf\Fpdf::class);
+$template = new amattu2\LabelSheet("Avery5160");
+$pdf = new Fpdf\Fpdf();
 ```
 
 ---
@@ -50,124 +53,63 @@ $template = new Avery\Avery5160(Fpdf\Fpdf::class);
 If you choose to install without composer support, you can clone the repository directly. **You will need to include FPDF also.**
 
 ```bash
-git clone https://github.com/amattu2/avery-fpdf-labels/tree/master
+git clone https://github.com/amattu2/avery-fpdf-labels
 ```
 
 Then
 
 ```php
 require 'fpdf/Fpdf.php'; // Install FPDF manually
-require 'src/Avery5160.php';
+require 'src/LabelSheet.php';
 
-$template = new Avery\Avery5160(Fpdf\Fpdf::class);
+$template = new amattu2\LabelSheet("Avery5160");
+$pdf = new Fpdf\Fpdf();
 ```
 
 ---
 
-### Usage
+## Usage
 
-```PHP
-/* follow the setup above */
+See [example.php](example.php) for demonstration of usage.
 
-// Set PDF properties
-$template->pdf->SetTitle("FPDF Template Example");
-$template->pdf->AddPage("P", "Letter");
-$template->pdf->SetFont('Helvetica', '', 11); // Font optional
-$template->pdf->SetTextColor(25, 25, 25); // Color optional
+### Text Label
 
-// Add labels
-$template->add(["ln1", "ln2"]);
-// see example.php
+Use the `addTextLabel` method to add a text label to the template. The method accepts an array of strings, an optional alignment parameter, and optional row and column parameters. This would typically be used for address labels.
 
-// Build PDF
-$template->writeLabels();
-
-// Output PDF
-$template->pdf->Output("I", "Labels.pdf");
+```php
+addTextLabel(array $lines, ?string $align = "C", int $row = null, int $col = null): void
 ```
 
-## Methods
-
-### __construct($pdf)
-
-This is a breaking change from pre-1.0.0 releases. The constructor now takes a classname as a argument, and no longer extends FPDF. This allows more flexibility if you have a need to pass a class that extends FPDF already.
-
-```PHP
-/**
- * Contructor
- *
- * @param  \FPDF|\Fpdf\Fpdf $pdf
- */
-public function __construct($pdf)
+```php
+$template->addTextLabel([
+  "line 1",
+  "line 2",
+  "line 3",
+  // ...
+])
 ```
 
-### add(array $lines, int $row = 0, int $col = 0)
+### Image Label
 
-This function adds a new label to the list of labels to be produced. There is currently no way to revoke a label once it has added.
+Use the `addImageLabel` method to add an image label to the template. The method accepts a path to an image file and optional row and column parameters.
 
-```PHP
-/**
- * Add a single label to the PDF
- *
- * @param array $lines an array of label liens
- * @param integer $row optional desired insert row
- * @param integer $col optional diesired intert column
- * @throws TypeError
- * @throws BadValueException
- * @author Alec M. <https://amattu.com>
- * @date 2021-09-05T13:49:28-040
- */
-public function add(array $lines, int $row = 0, int $col = 0) : void;
+```php
+addImageLabel(string $path, int $row = null, int $col = null): void
 ```
 
-Usage
-
-```PHP
-$lines = Array(
-  "Line 1",
-  "Line 2",
-  "Line 3",
-  "Line 4"
-);
-
-$template->add($lines);
+```php
+$template->addImageLabel("https://api.placeholder.app/image/350x350/.png");
 ```
 
-### writeLabels()
+### Custom Labels
 
-```PHP
-/**
- * Build the completed PDF with labels
- *
- * NOTE:
- *   (1) To save resources, no PDF is built until
- *   this function is called.
- *
- * @return void
- * @throws InvalidStateException
- * @author Alec M. <https://amattu.com>
- * @date 2021-09-05T13:50:58-040
- */
-public function writeLabels() : void;
+The `addCustomLabel` method allows you to expand upon the current label types (e.g. adding barcodes). You must instantiate your own implementation of the custom label and pass it to this method.
+
+```php
+addCustomLabel(LabelInterface $label): void
 ```
 
-Usage
-
-```PHP
-$template->writeLabels();
-
-// PDF content is written, now output PDF as desired
-```
-
-## Variables
-
-### `class->$pdf`
-
-The variable `pdf` is available upon class instantiation. It references a instance of the FPDF class passed to the constructor.
-
-```PHP
-$template->pdf->Cell('xyz');
-```
+The custom label must implement the `LabelInterface` interface. See [/src/LabelInterface.php](/src/LabelInterface.php) for more information.
 
 # Requirements & Dependencies
 

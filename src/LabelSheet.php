@@ -20,13 +20,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Avery;
+namespace amattu2;
 
 use TypeError;
 use InvalidArgumentException;
 
 require "LabelInterface.php";
 require "LabelType/TextLabel.php";
+require "LabelType/ImageLabel.php";
 
 /**
  * Avery Label FPDF Generator
@@ -40,30 +41,28 @@ class LabelSheet
    *
    * @var array
    */
-  public const LABELS = [
+  private const LABELS = [
     "Avery5160" => [
-      "top" => 13,
-      "bottom" => 13,
+      "top" => 12.9,
       "left" => 5,
       "rows" => 10,
-      "row_height" => 25.2,
-      "row_gap" => false,
-      "column_gap" => true,
+      "row_height" => 25.3,
+      "row_gap" => 0.15,
+      "column_gap" => 3,
       "columns" => 3,
       "column_width" => 66.675,
       "max_lines" => 4,
-      "border_radius" => 2.5,
+      "border_radius" => 2.3,
       "border_width" => 0.2,
       "size" => "Letter",
     ],
     "AveryPresta94107" => [
-      "top" => 16,
-      "bottom" => 16,
-      "left" => 16,
+      "top" => 15.9,
+      "left" => 15.9,
       "rows" => 4,
       "row_height" => 50.8,
-      "row_gap" => true,
-      "column_gap" => true,
+      "row_gap" => 14.775,
+      "column_gap" => 15.867,
       "columns" => 3,
       "column_width" => 50.8,
       "max_lines" => 6,
@@ -88,7 +87,7 @@ class LabelSheet
   protected $labels = [];
 
   /**
-   * Contructor
+   * Class Constructor
    *
    * @param string $template a label from the LABELS array
    * @throws InvalidArgumentException
@@ -103,7 +102,26 @@ class LabelSheet
     $this->template = self::LABELS[$template];
   }
 
-  public function addTextLabel(array $lines, int $row = null, int $col = null): void
+  /**
+   * Returns the list of available templates
+   *
+   * @return array
+   */
+  public static function getTemplates(): array
+  {
+    return self::LABELS;
+  }
+
+  /**
+   * Add a text label to the sheet
+   *
+   * @param  array        $lines an array of text lines to add to the label
+   * @param  string|null  $align the alignment of the text
+   * @param  integer|null $row
+   * @param  integer|null $col
+   * @return void
+   */
+  public function addTextLabel(array $lines, ?string $align = "C", int $row = null, int $col = null): void
   {
     if (empty($lines)) {
       throw new InvalidArgumentException("Cannot add a empty label to PDF");
@@ -118,12 +136,20 @@ class LabelSheet
       throw new InvalidArgumentException("Cannot add a label to column {$col}");
     }
 
-    $this->labels[] = new TextLabel($row, $col, array_pad($lines, $this->template['max_lines'], " "));
+    $this->labels[] = new TextLabel($row, $col, array_pad($lines, $this->template['max_lines'], " "), $align);
   }
 
+  /**
+   * Add a image label to the sheet
+   *
+   * @param  string       $path a local path or URL to an image
+   * @param  integer|null $row
+   * @param  integer|null $col
+   * @return void
+   */
   public function addImageLabel(string $path, int $row = null, int $col = null): void
   {
-    if (!file_exists($path) || filter_var($path, FILTER_VALIDATE_URL) === FALSE) {
+    if (!file_exists($path) && filter_var($path, FILTER_VALIDATE_URL) === FALSE) {
       throw new InvalidArgumentException("Cannot add a label with an invalid image path");
     }
     if ($row && ($row + 1) > $this->template['rows']) {
@@ -136,22 +162,21 @@ class LabelSheet
     $this->labels[] = new ImageLabel($row, $col, $path);
   }
 
-  public function addCustomLabel(LabelInterface $type, int $row = null, int $col = null): void
+  /**
+   * Add a custom label to the sheet
+   *
+   * @param  LabelInterface $label an instance of a custom label
+   * @return void
+   */
+  public function addCustomLabel(LabelInterface $label): void
   {
-    if ($row && ($row + 1) > $this->template['rows']) {
-      throw new InvalidArgumentException("Cannot add a label to row {$row}");
-    }
-    if ($col && ($col + 1) > $this->template['columns']) {
-      throw new InvalidArgumentException("Cannot add a label to column {$col}");
-    }
-
-    $this->labels[] = new $type($row, $col);
+    $this->labels[] = $label;
   }
 
   /**
    * Build the completed PDF with labels
    *
-   * @param $pdf FPDF instance to build onto
+   * @param \FPDF\Fpdf $pdf FPDF instance to build onto
    * @param  bool $borders optional whether to draw borders around label boxes
    * @return bool true on success
    */
@@ -168,13 +193,6 @@ class LabelSheet
 
     $useRoundedRect = method_exists($pdf, "RoundedRect") && $this->template['border_radius'] > 0;
     $itemsPerPage = $this->template['rows'] * $this->template['columns'];
-
-    $colGap = $this->template['column_gap']
-      ? ($pdf->GetPageWidth() - ($this->template['left'] + ($this->template['column_width'] * $this->template['columns']))) / $this->template['columns']
-      : 0;
-    $rowGap = $this->template['row_gap']
-      ? ($pdf->GetPageHeight() - ($this->template['top'] + ($this->template['row_height'] * $this->template['rows']))) / $this->template['rows']
-      : 0;
 
     $current_row = 0;
     $current_col = 0;
@@ -203,14 +221,14 @@ class LabelSheet
       if (!$r || $r > $this->template['rows']) {
         $r = $current_row++;
       }
-      $pdf->SetY($this->template['top'] + (($this->template['row_height'] + $rowGap) * $r));
+      $pdf->SetY($this->template['top'] + (($this->template['row_height'] + $this->template['row_gap']) * $r));
 
       // Get Column Placement
       $c = $item->GetCol();
       if (!$c || $c > $this->template['columns']) {
         $c = $current_col;
       }
-      $pdf->SetX($this->template['left'] + (($this->template['column_width'] + $colGap) * $c));
+      $pdf->SetX($this->template['left'] + (($this->template['column_width'] + $this->template['column_gap']) * $c));
 
       // Draw Borders
       if ($borders) {
