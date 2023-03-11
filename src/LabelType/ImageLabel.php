@@ -23,41 +23,38 @@
 namespace amattu2;
 
 /**
- * Label Type Interface
- *
- * All label types must implement this interface,
- * including custom label types.
+ * A Image Label for the LabelSheet
  */
-interface LabelInterface
+class ImageLabel implements LabelInterface
 {
-  /**
-   * LabelInterface constructor
-   *
-   * @param int|null $row
-   * @param int|null $col
-   * ...any additional arguments required for this label type
-   */
-  // public function __construct(?int $row, ?int $col, ...$args);
+  private $row;
+  private $col;
+  private $src;
 
-  /**
-   * Render the Label
-   *
-   * @param \TCPDF|\FPDF|\FPDI|\Fpdf\Fpdf $pdf to render to
-   * @param array $dimensions [x1, y1, template]
-   */
-  public function render($pdf, array $dimensions): bool;
+  public function __construct(?int $row, ?int $col, string $src)
+  {
+    $this->row = $row;
+    $this->col = $col;
+    $this->src = $src;
+  }
 
-  /**
-   * Get the requested placement row
-   *
-   * @return integer|null $row
-   */
-  public function GetRow(): ?int;
+  public function render($pdf, array $dimensions): bool
+  {
+    [$x1, $y1, $t] = $dimensions;
+    [$w, $h] = [$t['column_width'], $t['row_height']];
 
-  /**
-   * Get the requested placement column
-   *
-   * @return integer|null $col
-   */
-  public function GetCol(): ?int;
+    $pdf->Image($this->src, $x1, $y1, $w, $h);
+
+    return true;
+  }
+
+  public function GetRow(): ?int
+  {
+    return $this->row;
+  }
+
+  public function GetCol(): ?int
+  {
+    return $this->col;
+  }
 }

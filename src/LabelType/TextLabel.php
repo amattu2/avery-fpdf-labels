@@ -23,41 +23,40 @@
 namespace amattu2;
 
 /**
- * Label Type Interface
- *
- * All label types must implement this interface,
- * including custom label types.
+ * A Basic Text Label
  */
-interface LabelInterface
+class TextLabel implements LabelInterface
 {
-  /**
-   * LabelInterface constructor
-   *
-   * @param int|null $row
-   * @param int|null $col
-   * ...any additional arguments required for this label type
-   */
-  // public function __construct(?int $row, ?int $col, ...$args);
+  private $row;
+  private $col;
+  private $text;
+  private $align;
 
-  /**
-   * Render the Label
-   *
-   * @param \TCPDF|\FPDF|\FPDI|\Fpdf\Fpdf $pdf to render to
-   * @param array $dimensions [x1, y1, template]
-   */
-  public function render($pdf, array $dimensions): bool;
+  public function __construct(?int $row, ?int $col, array $text, string $align = "C")
+  {
+    $this->row = $row;
+    $this->col = $col;
+    $this->text = $text;
+    $this->align = $align;
+  }
 
-  /**
-   * Get the requested placement row
-   *
-   * @return integer|null $row
-   */
-  public function GetRow(): ?int;
+  public function render($pdf, array $dimensions): bool
+  {
+    [$x, $y, $t] = $dimensions;
+    [$w, $h, $lines] = [$t['column_width'], $t['row_height'], $t['max_lines']];
 
-  /**
-   * Get the requested placement column
-   *
-   * @return integer|null $col
-   */
-  public function GetCol(): ?int;
+    $pdf->MultiCell($w, $h / $lines, implode("\n", $this->text), 0, $this->align);
+
+    return true;
+  }
+
+  public function GetRow(): ?int
+  {
+    return $this->row;
+  }
+
+  public function GetCol(): ?int
+  {
+    return $this->col;
+  }
 }
