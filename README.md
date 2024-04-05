@@ -10,6 +10,7 @@ The currently implemented templates are listed below.
 
 - Avery 5160
 - Avery Presta 94107
+- Avery 5392
 
 ## Plans to Support
 
