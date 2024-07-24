@@ -9,19 +9,21 @@ This is a PHP project to implement support for generating [Avery.com](https://ww
 The currently implemented templates are listed below.
 
 - Avery 5160
+- Avery 5163
 - Avery Presta 94107
 - Avery 5392
 
-## Plans to Support
+## Upcoming
 
-Upcoming support for the following templates is planned. Feel free to contribute to the development effort by submitting a pull request. See [/templates](/templates/) for the PDF template that can be used during development to ensure sizing and spacing accuracy. **If you have an urgent need for a specific template to be supported, open a issue to let me know.**
+There are plans to support the following templates but **If you have an urgent need for a specific template to be supported, open a issue to let me know.**
 
 - Avery 5162
-- Avery 5163
 - Avery 5195
 - Avery 5816
 - Avery 5817
 - Avery 8160
+
+Feel free to contribute to the development effort by submitting a pull request for any of the above templates or any other templates you would like to see supported.
 
 # Usage
 
