@@ -246,14 +246,14 @@ class LabelSheet
 
       // Get Row Placement
       $r = $item->GetRow();
-      if (!$r || $r > $this->template['rows']) {
+      if (null === $r || $r > $this->template['rows']) {
         $r = $current_row++;
       }
       $pdf->SetY($this->template['top'] + (($this->template['row_height'] + $this->template['row_gap']) * $r));
 
       // Get Column Placement
       $c = $item->GetCol();
-      if (!$c || $c > $this->template['columns']) {
+      if (null === $c || $c > $this->template['columns']) {
         $c = $current_col;
       }
       $pdf->SetX($this->template['left'] + (($this->template['column_width'] + $this->template['column_gap']) * $c));
