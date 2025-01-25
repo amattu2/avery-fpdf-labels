@@ -52,12 +52,12 @@ class TextLabel implements LabelInterface
     return true;
   }
 
-  public function GetRow(): ?int
+  public function getRow(): ?int
   {
     return $this->row;
   }
 
-  public function GetCol(): ?int
+  public function getCol(): ?int
   {
     return $this->col;
   }
