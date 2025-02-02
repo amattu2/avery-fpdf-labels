@@ -22,12 +22,10 @@
 
 namespace amattu2;
 
-use TypeError;
+use amattu2\LabelType\ImageLabel;
+use amattu2\LabelType\TextLabel;
 use InvalidArgumentException;
-
-require "LabelInterface.php";
-require "LabelType/TextLabel.php";
-require "LabelType/ImageLabel.php";
+use TypeError;
 
 /**
  * Avery Label FPDF Generator

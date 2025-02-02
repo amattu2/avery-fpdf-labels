@@ -20,7 +20,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace amattu2;
+namespace amattu2\LabelType;
+
+use amattu2\LabelInterface;
 
 /**
  * A Image Label for the LabelSheet
