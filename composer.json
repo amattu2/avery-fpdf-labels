@@ -3,21 +3,19 @@
     "description": "A PHP library designed to assist in building Avery Label sheets with FPDF",
     "type": "library",
     "license": "AGPL-3.0-or-later",
+    "authors": [
+        {"name": "Alec M.", "email": "alecmattu1234@gmail.com"}
+    ],
+    "require": {
+        "php": ">=7.4",
+        "fpdf/fpdf": "^1.85"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
     "autoload": {
         "psr-4": {
             "amattu2\\": "src/"
         }
-    },
-    "authors": [
-        {
-            "name": "Alec M.",
-            "email": "alecmattu1234@gmail.com"
-        }
-    ],
-    "require-dev": {
-        "phpunit/phpunit": "^10.0"
-    },
-    "require": {
-        "fpdf/fpdf": "^1.85"
     }
 }
