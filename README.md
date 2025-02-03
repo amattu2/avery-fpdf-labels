@@ -1,120 +1,60 @@
 # Introduction
 
-This is a PHP project to implement support for generating [Avery.com](https://www.avery.com/templates) label templates using [FPDF](https://fpdf.org).
+This is a PHP project to implement support for generating [Avery](https://www.avery.com/templates) label templates using [FPDF](http://fpdf.org/).
 
-# Templates
+# Installation
 
-## Supported
+Make sure Composer is installed globally, as explained in the
+[installation chapter](https://getcomposer.org/doc/00-intro.md)
+of the Composer documentation.
 
-The currently implemented templates are listed below.
+Then run
 
-- Avery 5160
-- Avery 5163
-- Avery Presta 94107
-- Avery 5392
+```console
+$ composer require amattu2/avery-fpdf-labels
+```
 
-## Upcoming
+## Usage
 
-There are plans to support the following templates but **If you have an urgent need for a specific template to be supported, open a issue to let me know.**
+See the [documentation](docs/index.md).
+
+## Supported Templates
+
+- Avery Rectangle Labels (1" x 2-5/8") (Use `Avery5160`)
+
+  `5160`, `5260`, `5520`, `5620`, `5630`, `5660`, `5810`, `5960`, `5970`, `5971`, `5972`, `5979`, `5980`, `6240`, `6241`,
+  `6460`, `6461`, `6476`, `6478`, `6479`, `6498`, `6521`, `6525`, `6526`, `6560`, `6585`, `6970`, `7660`, `7666`, `8160`,
+  `8215`, `8250`, `8460`, `8620`, `8660`, `8810`, `8860`, `8920`, `9160`, `15160`, `15510`, `15660`, `15700`, `15960`,
+  `16460`, `18160`, `18260`, `18660`, `22837`, `28660`, `32660`, `38260`, `45160`, `48160`, `48260`, `48360`, `48460`,
+  `48860`, `48960`, `55160`, `55260`, `55360`, `58160`, `58260`, `58660`, `75160`, `80509`, `85560`, `88560`, `95915`,
+  `Presta™ 94200`
+
+
+- Avery Rectangle Labels (2" x 4") (Use `Avery5163`)
+
+  `5163`, `5263`, `5523`, `5663`, `5784`, `5954`, `5956`, `5963`, `5964`, `5973`, `5973`, `5974`, `5976`, `5978`, `6427`,
+  `6468`, `6477`, `6481`, `6522`, `6522`, `6527`, `6528`, `7663`, `8163`, `8253`, `8363`, `8463`, `8563`, `8663`, `8923`,
+  `15163`, `15513`, `15563`, `15663`, `15702`, `18163`, `18663`, `18863`, `28663`, `38363`, `38863`, `48163`, `48263`,
+  `48363`, `48463`, `48863`, `55163`, `55263`, `55363`, `55463`, `58163`, `58163`, `58263`, `60505`, `60525`, `85563`,
+  `92102`, `95523`, `95910`, `95945`, `Presta™ 94207`
+
+
+- Avery Name Badge Inserts (3" x 4") (Use `Avery5392`)
+
+  `5384`, `5392`, `5393`, `74459`, `74536`, `74540`, `74541`, `78617`, `78619`
+
+
+- Avery Print-to-the-Edge Square Labels (2") (Use `AveryPresta94107`)
+
+  `22960`, `22806`, `22816`, `22853`, `22922`, `80510`, `22846`, `22930`, `22921`, `92114`, `Presta™ 94107`
+
+### Upcoming
+
+There are plans to support the following templates but if you have an urgent need for a specific template to be supported, open an issue.
 
 - Avery 5162
 - Avery 5195
 - Avery 5816
 - Avery 5817
-- Avery 8160
 
 Feel free to contribute to the development effort by submitting a pull request for any of the above templates or any other templates you would like to see supported.
-
-# Usage
-
-## Install
-
-### Composer
-
-To install via composer, follow the simple steps below.
-
-```bash
-composer install amattu2/avery-fpdf-labels
-composer install fpdf/fpdf
-```
-
-**NOTE:** You can use any fork of FPDF you want as long as it implements the same methods as FPDF.
-
-Then
-
-```php
-require 'vendor/autoload.php';
-
-$template = new amattu2\LabelSheet("Avery5160");
-$pdf = new Fpdf\Fpdf();
-```
-
----
-
-### Direct
-
-If you choose to install without composer support, you can clone the repository directly. **You will need to include FPDF also.**
-
-```bash
-git clone https://github.com/amattu2/avery-fpdf-labels
-```
-
-Then
-
-```php
-require 'fpdf/Fpdf.php'; // Install FPDF manually
-require 'src/LabelSheet.php';
-
-$template = new amattu2\LabelSheet("Avery5160");
-$pdf = new Fpdf\Fpdf();
-```
-
----
-
-## Usage
-
-See [example.php](example.php) for demonstration of usage.
-
-### Text Label
-
-Use the `addTextLabel` method to add a text label to the template. The method accepts an array of strings, an optional alignment parameter, and optional row and column parameters. This would typically be used for address labels.
-
-```php
-addTextLabel(array $lines, ?string $align = "C", int $row = null, int $col = null): void
-```
-
-```php
-$template->addTextLabel([
-  "line 1",
-  "line 2",
-  "line 3",
-  // ...
-])
-```
-
-### Image Label
-
-Use the `addImageLabel` method to add an image label to the template. The method accepts a path to an image file and optional row and column parameters.
-
-```php
-addImageLabel(string $path, int $row = null, int $col = null): void
-```
-
-```php
-$template->addImageLabel("https://api.placeholder.app/image/350x350/.png");
-```
-
-### Custom Labels
-
-The `addCustomLabel` method allows you to expand upon the current label types (e.g. adding barcodes). You must instantiate your own implementation of the custom label and pass it to this method.
-
-```php
-addCustomLabel(LabelInterface $label): void
-```
-
-The custom label must implement the `LabelInterface` interface. See [/src/LabelInterface.php](/src/LabelInterface.php) for more information.
-
-# Requirements & Dependencies
-
-- FPDF 1.81 Minimum [http://www.fpdf.org/]
-- PHP 7.4+ [https://php.net]

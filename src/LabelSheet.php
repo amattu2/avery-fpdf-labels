@@ -166,7 +166,7 @@ class LabelSheet
   }
 
   /**
-   * Add a image label to the sheet
+   * Add an image label to the sheet
    *
    * @param  string       $path a local path or URL to an image
    * @param  integer|null $row
