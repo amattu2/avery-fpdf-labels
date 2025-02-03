@@ -52,12 +52,12 @@ interface LabelInterface
    *
    * @return integer|null $row
    */
-  public function GetRow(): ?int;
+  public function getRow(): ?int;
 
   /**
    * Get the requested placement column
    *
    * @return integer|null $col
    */
-  public function GetCol(): ?int;
+  public function getCol(): ?int;
 }
